@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batalla Épica de los Números</title>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #111 0%, #000 100%);
+      color: #f2f2f2;
+      font-family: 'Trebuchet MS', sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.4rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffae00;
+      margin-bottom: 6px;
+    }
+    p.lead {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 18px;
+      color: #ddd;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    input[type="number"] {
+      width: 110px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #0b0b0b;
+      color: #ffd700;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    #output {
+      max-width: 900px;
+      margin: 24px auto;
+      font-size: 1.05rem;
+      white-space: pre-line;
+    }
+    .banner {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      background: rgba(255, 215, 0, 0.08);
+      color: #ffd700;
+      border: 1px solid #ffd70044;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-shadow: 0 0 6px #ffae00;
+    }
+    #startBtn, #finalBtn {
+      display: inline-block;
+      background: #ffd700;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.18s;
+    }
+    #startBtn:hover, #finalBtn:hover {
+      background: #ffae00;
+      transform: scale(1.04);
+    }
+    #finalBtn {
+      display: none;
+    }
+    p { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h1>⚔️ La Gran Batalla Numérica ⚔️</h1>
+  <p class="lead">Los números entran a la arena... El destino está en manos del Game Master: <strong>Paez</strong>.</p>
+
+  <div class="controls">
+    <label for="numParticipants" style="color:#ddd;">Participantes:</label>
+    <input id="numParticipants" type="number" min="2" value="131" />
+    <button id="startBtn">Iniciar Batalla</button>
+  </div>
+
+  <div id="output"></div>
+
+  <div style="text-align:center; margin-top:12px;">
+    <button id="finalBtn">🔥 Batalla Final</button>
+  </div>
+
+  <div class="banner">by: Paez</div>
+
+  <script>
+    const output = document.getElementById("output");
+    const startBtn = document.getElementById("startBtn");
+    const finalBtn = document.getElementById("finalBtn");
+    const numInput = document.getElementById("numParticipants");
+
+    let numeros = [];
+    let finalistas = [];
+
+    const frases = [
+      " arremetió con furia desatada ⚡",
+      " usó una técnica prohibida del cálculo oscuro 🌀",
+      " esquivó con elegancia y contraatacó con precisión 🎯",
+      " lanzó una emboscada matemática 💥",
+      " invocó el poder del número π 🔥",
+      " gritó su número con orgullo antes del impacto 💢",
+      " desapareció en una nube de humo digital 🕶️",
+      " fue alcanzado por una lluvia de bits ☄️"
+    ];
+
+    function narrarLinea(texto, delay) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          const p = document.createElement("p");
+          p.innerHTML = texto;
+          output.appendChild(p);
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          resolve();
+        }, delay);
+      });
+    }
+
+    async function iniciarBatalla() {
+      // leer cantidad
+      const n = parseInt(numInput.value, 10);
+      if (isNaN(n) || n < 2) {
+        alert("Ingresa un número válido (mínimo 2).");
+        return;
+      }
+
+      // desactivar controles durante la simulación
+      startBtn.disabled = true;
+      numInput.disabled = true;
+      startBtn.style.display = "none";
+      finalBtn.style.display = "none";
+      output.innerHTML = "";
+
+      // construir array [1..n]
+      numeros = Array.from({ length: n }, (_, i) => (i + 1).toString());
+
+      await narrarLinea("🏟️ Los contendientes se posicionan en la arena...", 500);
+      await narrarLinea("💥 ¡La batalla comienza!", 900);
+
+      let ronda = 1;
+      // Mantener la lógica de eliminaciones por pares (como en la versión que te gustó)
+      while (numeros.length > 2) {
+        await narrarLinea(`\n⚔️ Ronda ${ronda}: ${numeros.length} números siguen en pie.`, 700);
+        const sobrevivientes = [];
+        for (let i = 0; i < numeros.length; i += 2) {
+          const n1 = numeros[i];
+          const n2 = numeros[i + 1];
+          if (n2 === undefined) {
+            // si impar, el último sobrevive automáticamente
+            sobrevivientes.push(n1);
+            await narrarLinea(`• ${n1} se refugia y sigue en pie...`, 120);
+            continue;
+          }
+          const atacante = Math.random() > 0.5 ? n1 : n2;
+          const derrotado = atacante === n1 ? n2 : n1;
+          const frase = frases[Math.floor(Math.random() * frases.length)];
+          await narrarLinea(`• El número ${atacante}${frase} y ${derrotado} cae al suelo... ❌`, 220);
+          sobrevivientes.push(atacante);
+        }
+        numeros = sobrevivientes;
+        ronda++;
+      }
+
+      finalistas = [...numeros];
+      await narrarLinea("\n🔥 Solo dos permanecen en pie...", 1000);
+      await narrarLinea(`Los finalistas son: <b>${finalistas[0]}</b> y <b>${finalistas[1]}</b> ⚔️`, 900);
+      await narrarLinea("El aire se vuelve denso... el público contiene la respiración...", 900);
+
+      finalBtn.style.display = "inline-block";
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function batallaFinal() {
+      finalBtn.style.display = "none";
+      await narrarLinea("\n🌌 Los finalistas avanzan al centro de la arena...", 700);
+      await narrarLinea(`💫 ${finalistas[0]} y ${finalistas[1]} se observan, sabiendo que solo uno quedará...`, 900);
+      const ganador = Math.random() > 0.5 ? finalistas[0] : finalistas[1];
+      await narrarLinea(`⚔️ ¡El choque final sacude el cosmos!`, 1100);
+      await narrarLinea(`🏆 ¡El número ${ganador} se alza victorioso como Campeón Supremo!`, 1400);
+      await narrarLinea("\nY así concluye la Gran Batalla Numérica... narrada por el mismísimo Paez ⚡", 1600);
+
+      // permitir reiniciar: mostrar botón iniciar de nuevo
+      numInput.disabled = false;
+      startBtn.disabled = false;
+      startBtn.style.display = "inline-block";
+    }
+
+    startBtn.addEventListener("click", iniciarBatalla);
+    finalBtn.addEventListener("click", batallaFinal);
+  </script>
+</body>
+</html>
